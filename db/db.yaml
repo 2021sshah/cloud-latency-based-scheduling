@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db
+  namespace: default
+  labels:
+    app: db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+        - name: db
+          image: 192.168.5.182:5000/db:latest
+          ports:
+            - containerPort: 5000
+          env:
+            - name: KAFKA_BROKER
+              value: "kafka-service:9092"
+            - name: KAFKA_TOPIC
+              value: "vlm_data"
+            - name: ENVIRONMENT
+              value: "production"  # Any additional environment variables as needed

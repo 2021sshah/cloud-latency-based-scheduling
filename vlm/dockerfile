@@ -1,0 +1,26 @@
+# Use an official Python image as the base
+FROM python:3.10-buster
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy the local files into the container
+COPY . /app
+
+# Create a virtual environment
+RUN python3 -m venv /app/venv
+
+# Activate the virtual environment and install dependencies
+RUN . /app/venv/bin/activate && \
+    pip install --upgrade pip && \
+    pip install uv && \
+    uv pip install kafka-python requests moondream
+
+# Download the VLM weights file from Hugging Face and decompress it
+RUN wget "https://huggingface.co/vikhyatk/moondream2/resolve/client/moondream-latest-int4.bin.gz?download=true" -O - | gunzip > /app/moondream-latest-int4.bin
+
+# Set environment variables for the downloaded VLM weights file location
+ENV VLM_WEIGHTS_PATH=/app/moondream-latest-int8.bin
+
+# Set the command to run the iot_producer.py script directly
+CMD ["/app/venv/bin/python", "vlm.py"]

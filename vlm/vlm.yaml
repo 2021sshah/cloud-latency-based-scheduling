@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vlm
+  namespace: default
+  labels:
+    app: vlm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vlm
+  template:
+    metadata:
+      labels:
+        app: vlm
+    spec:
+      nodeSelector:
+        dedicated: vlm-node  # Node selector to run on team7-project1
+      containers:
+        - name: vlm
+          image: 192.168.5.182:5000/vlm:latest
+          resources:
+            requests:
+              memory: "8Gi"
+            limits:
+              memory: "16Gi"
+          ports:
+            - containerPort: 5000
+          env:
+            - name: KAFKA_BROKER
+              value: "kafka-service:9092"
+            - name: KAFKA_CONSUMER_TOPIC
+              value: "scheduling_data"
+            - name: KAFKA_CHANNEL_NUM
+              value: "1"
+            - name: KAFKA_PRODUCER_TOPIC
+              value: "vlm_data"
+            - name: ENVIRONMENT
+              value: "production"  # Any additional environment variables as needed

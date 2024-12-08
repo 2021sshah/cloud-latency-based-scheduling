@@ -1,0 +1,22 @@
+# Use an official Python image as the base
+FROM python:3.9-slim
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy the local files into the container
+COPY . /app
+
+# Create a virtual environment if it doesn't exist
+RUN python3 -m venv /app/venv || true
+
+# Activate the virtual environment and install dependencies
+RUN . /app/venv/bin/activate && \
+    pip install --upgrade pip && \
+    pip install kafka-python 
+
+# Set environment variables
+ENV KAFKA_BROKER=kafka:9092
+
+# Command to activate the virtual environment and run db.py directly
+CMD ["/app/venv/bin/python", "db.py"]

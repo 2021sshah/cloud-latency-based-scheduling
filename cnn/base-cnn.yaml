@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cnn
+  namespace: default
+  labels:
+    app: cnn
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cnn
+  template:
+    metadata:
+      labels:
+        app: cnn
+    spec:
+      nodeSelector:
+        dedicated: vlm-node  # Node selector to run on team7-project1
+      containers:
+        - name: cnn
+          image: 192.168.5.182:5000/cnn:latest
+          ports:
+            - containerPort: 5000
+          env:
+            - name: KAFKA_BROKER
+              value: "kafka-service:9092"
+            - name: KAFKA_CONSUMER_TOPIC
+              value: "scheduling_data"
+            - name: CHANNEL_NUM
+              value: "4"
+            - name: SERVER_DELAY
+              value: "0"
+            - name: KAFKA_PRODUCER_TOPIC
+              value: "vlm_data"
+            - name: ENVIRONMENT
+              value: "production"  # Any additional environment variables as needed
